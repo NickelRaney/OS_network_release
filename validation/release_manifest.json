@@ -92,8 +92,8 @@
     },
     {
       "file": "README.md",
-      "bytes": 7807,
-      "sha256": "315995b53716db6fdad8e8b6422724a30a82ee5a7729ec0a1d8416e3d337901b"
+      "bytes": 1399,
+      "sha256": "89562f4fc65a99a8a421ace3a632af6c9b0d7e76974e956a9deb19340b0604e8"
     },
     {
       "file": "run_demo.m",
@@ -356,7 +356,7 @@
       "sha256": "e5fd7ee8bf670f54e6447b62875e441cf6b4938f96d58929c4362e59848676b0"
     }
   ],
-  "total_bytes": 14242782,
+  "total_bytes": 14236374,
   "largest_bytes": 6717051,
   "passed": true
 }

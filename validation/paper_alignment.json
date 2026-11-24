@@ -1,0 +1,284 @@
+{
+  "status": "NOT certified as a complete reproduction of the paper figures",
+  "window": [
+    "2026-08-23",
+    "2026-11-23"
+  ],
+  "model": "High-cx / Disordered-LGN",
+  "F1": [
+    2.25,
+    1.5
+  ],
+  "fresh_rate_trials": 12,
+  "rate_population_order": [
+    "All E",
+    "Simple",
+    "Complex",
+    "I"
+  ],
+  "rates": [
+    {
+      "condition": "bg",
+      "reference_hz": [
+        5.008917954815695,
+        2.8585858585858586,
+        10.180161943319838,
+        26.29310344827586
+      ],
+      "fresh_mean_hz": [
+        5.475921521997622,
+        3.2866161616161618,
+        10.74089068825911,
+        27.59051724137931
+      ],
+      "fresh_min_hz": [
+        5.07550535077289,
+        2.9242424242424243,
+        10.248987854251013,
+        26.482758620689655
+      ],
+      "fresh_max_hz": [
+        5.955410225921522,
+        3.6237373737373737,
+        11.562753036437247,
+        28.67241379310345
+      ],
+      "relative_difference_percent": [
+        9.323442136498517,
+        14.973498233215544,
+        5.508053290912707,
+        4.934426229508193
+      ]
+    },
+    {
+      "condition": "opt",
+      "reference_hz": [
+        28.251486325802617,
+        17.20117845117845,
+        54.825910931174086,
+        82.39655172413794
+      ],
+      "fresh_mean_hz": [
+        28.834274673008323,
+        17.673400673400675,
+        55.67459514170041,
+        82.8241379310345
+      ],
+      "fresh_min_hz": [
+        28.31331747919144,
+        17.28787878787879,
+        54.82793522267207,
+        81.8551724137931
+      ],
+      "fresh_max_hz": [
+        29.241973840665874,
+        17.962962962962962,
+        56.3663967611336,
+        83.52068965517242
+      ],
+      "relative_difference_percent": [
+        2.0628590668995583,
+        2.7452899437240275,
+        1.5479618963225583,
+        0.5189370161121643
+      ]
+    },
+    {
+      "condition": "ortho",
+      "reference_hz": [
+        12.288347205707492,
+        4.856060606060606,
+        30.161943319838056,
+        51.05172413793103
+      ],
+      "fresh_mean_hz": [
+        11.426129607609987,
+        4.519570707070707,
+        28.035425101214578,
+        49.07327586206897
+      ],
+      "fresh_min_hz": [
+        11.220570749108205,
+        4.420875420875421,
+        27.572874493927124,
+        48.51724137931034
+      ],
+      "fresh_max_hz": [
+        11.563614744351963,
+        4.592592592592593,
+        28.512145748987855,
+        49.4
+      ],
+      "relative_difference_percent": [
+        -7.016546518941425,
+        -6.929277171086856,
+        -7.05033557046979,
+        -3.875379939209722
+      ]
+    }
+  ],
+  "onset": {
+    "total_attempts": 241,
+    "slots": 220,
+    "first_rejections_complex_simple": [
+      18,
+      2
+    ],
+    "all_accepted_pass": true,
+    "condition_order": [
+      "First attempts, no rejection",
+      "Historical MFE rule"
+    ],
+    "group_order": [
+      "Simple (274 fixed preferred cells)",
+      "Cx high (103)",
+      "Cx medium (86)",
+      "Cx low (58)"
+    ],
+    "paper_medians_ms": [
+      52.66000000000008,
+      46,
+      55.5,
+      69
+    ],
+    "results": [
+      {
+        "medians_with_plot_offset_ms": [
+          52.98333333333346,
+          48,
+          64,
+          78
+        ],
+        "mean_absolute_cell_error_ms": [
+          7.955626955161627,
+          6.611650485436893,
+          13.348837209302326,
+          27.362068965517242
+        ],
+        "complex_no_crossing": 0,
+        "simple_censored_at_500": 0
+      },
+      {
+        "medians_with_plot_offset_ms": [
+          53.85000000000002,
+          47,
+          62.5,
+          77.5
+        ],
+        "mean_absolute_cell_error_ms": [
+          8.086691432047276,
+          6.058252427184466,
+          12.069767441860465,
+          24.396551724137932
+        ],
+        "complex_no_crossing": 0,
+        "simple_censored_at_500": 0
+      }
+    ]
+  },
+  "frozen_analysis": {
+    "simple_n": 274,
+    "simple_fig4_max_error": 2.2737367544323206e-13,
+    "simple_fig5_max_error": 168.46666666666647,
+    "simple_raw_median": 48.660000000000196,
+    "simple_fig4_median": 52.66000000000008,
+    "simple_fig5_median": 76.46250000000009,
+    "complex_fig4_max_error": 0,
+    "complex_fig4_ssfr_max_error": 0,
+    "six_cell_fields": [
+      "spike_6cells"
+    ],
+    "six_cell_spike_max_error": 0,
+    "DS_candidates": [
+      [
+        {
+          "lgn": "lgn",
+          "target": "res_vert_newmodel",
+          "max_error": 0.11170637812238826,
+          "rmse": 0.022702285005984507
+        },
+        {
+          "lgn": "lgn",
+          "target": "res_vert_long_newmodel",
+          "max_error": 0.1098850168282366,
+          "rmse": 0.016737930627513116
+        }
+      ],
+      [
+        {
+          "lgn": "lgn2",
+          "target": "res_vert_newmodel",
+          "max_error": 0.10797854238962358,
+          "rmse": 0.022096652594836633
+        },
+        {
+          "lgn": "lgn2",
+          "target": "res_vert_long_newmodel",
+          "max_error": 0.11161556981601706,
+          "rmse": 0.022895358989897398
+        }
+      ],
+      [
+        {
+          "lgn": "lgn_vert",
+          "target": "res_vert_newmodel",
+          "max_error": 0.09141341689413732,
+          "rmse": 0.017025329061693188
+        },
+        {
+          "lgn": "lgn_vert",
+          "target": "res_vert_long_newmodel",
+          "max_error": 0.11325988482268858,
+          "rmse": 0.023574514138899154
+        }
+      ],
+      [
+        {
+          "lgn": "lgn_vert_long",
+          "target": "res_vert_newmodel",
+          "max_error": 0.12261308904569661,
+          "rmse": 0.02457273077338745
+        },
+        {
+          "lgn": "lgn_vert_long",
+          "target": "res_vert_long_newmodel",
+          "max_error": 0.11882812531565912,
+          "rmse": 0.020484612515353655
+        }
+      ]
+    ],
+    "DS_effective_E_connection_changes": 31558,
+    "DS_effective_I_connection_changes": 0,
+    "DS_lgn_vert_equal": true,
+    "DS_lgn_vert_long_equal": true,
+    "six_cell_roi_indices": [
+      2,
+      250,
+      137,
+      40,
+      29,
+      289
+    ]
+  },
+  "backend": {
+    "short_all_fields_exact": true,
+    "long_all_fields_exact": true,
+    "short_rng_exact": true,
+    "long_rng_exact": true
+  },
+  "figure5": {
+    "roi_index": 662,
+    "global_cell": 7667,
+    "nLGN": 11,
+    "steady_window_rows": [
+      1000,
+      1500
+    ],
+    "onset_window_rows": [
+      1446,
+      1696
+    ],
+    "steady_shown_max_error": 0.053826377538764805,
+    "onset_shown_max_error": 0.07126310849354257
+  }
+}

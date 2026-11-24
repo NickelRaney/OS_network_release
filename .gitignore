@@ -1,0 +1,16 @@
+# Generated experiments, local logs and MATLAB caches
+outputs/*
+!outputs/.gitkeep
+*.asv
+*.m~
+*.mex*
+*.log
+*.mlappinstall
+*.prj
+slprj/
+codegen/
+__pycache__/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

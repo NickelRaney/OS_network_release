@@ -1,0 +1,100 @@
+{
+  "passed": true,
+  "files": [
+    {
+      "source": "OS_network/V1_4_fast.m",
+      "sha256": "f9ce70e9b92ab3bcc9f43396c498bb92e8f5dc6210afdc89c1a6cc0208108b82",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/LGN3.m",
+      "sha256": "0f463b09dc01b80405e8711c1187c1f1c04e0e5fa18b3e005b7f854a8ade1542",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/LGN4.m",
+      "sha256": "d06a8e5fc1fcf5bf3ffae2ac4295d3c4d063c2932fb4f4e68ae76fc3ab9879ff",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/NLIF.m",
+      "sha256": "935e1faae20820c425686c552b59a3ad2a55c3e3d11afe47780aafc7010dbaf7",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/ex_gen2.m",
+      "sha256": "301ec244d763348b1bd7192a3f28875b83622fda3f81880792de97967c1b567d",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/ex_gen_onset_test.m",
+      "sha256": "8cabf53731241975b7bab01450e882f43b3fc17fcc838cfe965024ca096365dd",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/stat_script.m",
+      "sha256": "fa7bb24e50ef4e397c000e6694fb018da8f5f47aa576317ecc77b116fb57a335",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/suddeninput.m",
+      "sha256": "e70dbcc50c3531015af942e6a7cfe8141824deac7f0d5bd18212ec2a3a394e41",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/suddeninput_multi.m",
+      "sha256": "23fee22bca16c37cf8b7d6711b9707259c03930d5818142bde8b7f8777d34e31",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/25_9_28/parameters.txt",
+      "sha256": "7a532cef475edf76764eef9f33ab4e3591acedd41874bbbda99a9879df22025f",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/25_9_28/10_13/phase_code.m",
+      "sha256": "d2025c656702b45671602caae9650fa7c94e90d062d7432fb889cc2fc7706975",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/2026_1_7_paperfigure/revised/fig5_icell_generate_data.m",
+      "sha256": "a27065e19837aa529ec7ba40dd986fcfa6c66d54f5a99c9a43b85ae52c87d9b2",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/native/validation/source_manifest.json",
+      "sha256": "5dd396c6afc37f82e68fc37770caeb71ab8b7edc2afcbd88176474c52e94e251",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/native/validation/optimization_final_v2_vs_matlab_2500ms_seed20261005_20261005_161111_168.json",
+      "sha256": "1ef666a7e0cc8e6c59cb2ecade5c618fbe88210a89d7c7c81a73a1d141a046b9",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/25_9_28/10_13/10_25 version of parameter for new model.mat",
+      "sha256": "55fdbfaf8ddc08c17fcfdf1bf8e9321dc7c90b57d0e065dfed638d6dfae3177f",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "OS_network/25_9_28/lowlgn/low lgn full param.mat",
+      "sha256": "e948f3eeab18f12fce580b596a8c9deb5235f9aebe771437aef207e4fb762a5c",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "V1_padding20_first_test_20261008/results/onset_reproduction/20261028_old_parameters/conclusions.txt",
+      "sha256": "549e0f97d92e625589c08d3467e2a081d5cf271c66e1567cd76da70eb214dd3c",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "V1_padding20_first_test_20261008/results/onset_reproduction/20261028_old_parameters/reference/SI_draft_2_numerical_audit_2026-09-19.md",
+      "sha256": "66d8e792b3e7d0216698c81b5ec67b29598b4c366b6ba872e3f801d0b9b2b8ce",
+      "matches_recorded_source": true
+    },
+    {
+      "source": "V1_padding20_first_test_20261008/results/onset_reproduction/20261028_old_parameters/reference/legacy_matlab_reference.mat",
+      "sha256": "7ab6d0927569c3bea289b5f39f92505f53228f3942dc07a9d6fcbdcc56dde4b3",
+      "matches_recorded_source": true
+    }
+  ]
+}

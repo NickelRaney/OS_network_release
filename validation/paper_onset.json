@@ -1,0 +1,59 @@
+{
+  "total_attempts": 241,
+  "slots": 220,
+  "first_rejections_complex_simple": [
+    18,
+    2
+  ],
+  "all_accepted_pass": true,
+  "condition_order": [
+    "First attempts, no rejection",
+    "Historical MFE rule"
+  ],
+  "group_order": [
+    "Simple (274 fixed preferred cells)",
+    "Cx high (103)",
+    "Cx medium (86)",
+    "Cx low (58)"
+  ],
+  "paper_medians_ms": [
+    52.660000000000082,
+    46,
+    55.5,
+    69
+  ],
+  "results": [
+    {
+      "medians_with_plot_offset_ms": [
+        52.983333333333462,
+        48,
+        64,
+        78
+      ],
+      "mean_absolute_cell_error_ms": [
+        7.9556269551616268,
+        6.6116504854368934,
+        13.348837209302326,
+        27.362068965517242
+      ],
+      "complex_no_crossing": 0,
+      "simple_censored_at_500": 0
+    },
+    {
+      "medians_with_plot_offset_ms": [
+        53.850000000000023,
+        47,
+        62.5,
+        77.5
+      ],
+      "mean_absolute_cell_error_ms": [
+        8.0866914320472763,
+        6.058252427184466,
+        12.069767441860465,
+        24.396551724137932
+      ],
+      "complex_no_crossing": 0,
+      "simple_censored_at_500": 0
+    }
+  ]
+}

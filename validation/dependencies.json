@@ -1,0 +1,42 @@
+{
+  "files": [
+    "config/model_config.m",
+    "examples/reproduce_historical_onset.m",
+    "examples/run_conditions.m",
+    "run_demo.m",
+    "setup.m",
+    "src/LGN3.m",
+    "src/LGN4.m",
+    "src/NLIF.m",
+    "src/V1_4_fast.m",
+    "src/ex_gen2.m",
+    "src/ex_gen_onset_test.m",
+    "src/file_sha256.m",
+    "src/historical_t50.m",
+    "src/lgnout.m",
+    "src/plot_run.m",
+    "src/pos_gen.m",
+    "src/run_simulation.m",
+    "src/source_manifest.m",
+    "src/spike_summary.m",
+    "src/validate_result.m",
+    "src/write_json.m",
+    "tests/run_tests.m"
+  ],
+  "products": [
+    {
+      "Name": "MATLAB",
+      "Version": "25.2",
+      "ProductNumber": 1,
+      "Certain": true
+    },
+    {
+      "Name": "Statistics and Machine Learning Toolbox",
+      "Version": "25.2",
+      "ProductNumber": 19,
+      "Certain": true
+    }
+  ],
+  "passed": true,
+  "note": "Static source closure; dynamic data paths are covered by executed demos and packaged data."
+}

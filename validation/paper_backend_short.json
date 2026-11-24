@@ -1,0 +1,145 @@
+{
+  "fieldsMatch": true,
+  "exact": true,
+  "allFinite": true,
+  "maxAbs": 0,
+  "fields": {
+    "VE": {
+      "shape": [
+        401,
+        13689
+      ],
+      "sameShape": true,
+      "exact": true,
+      "maxAbs": 0,
+      "differentElements": 0,
+      "firstDifferentLinearIndex": 0,
+      "firstDifferentRow": 0,
+      "firstDifferentColumn": 0,
+      "allFinite": true,
+      "firstDifferentStep": 0
+    },
+    "VI": {
+      "shape": [
+        401,
+        2401
+      ],
+      "sameShape": true,
+      "exact": true,
+      "maxAbs": 0,
+      "differentElements": 0,
+      "firstDifferentLinearIndex": 0,
+      "firstDifferentRow": 0,
+      "firstDifferentColumn": 0,
+      "allFinite": true,
+      "firstDifferentStep": 0
+    },
+    "HE": {
+      "shape": [
+        401,
+        16090
+      ],
+      "sameShape": true,
+      "exact": true,
+      "maxAbs": 0,
+      "differentElements": 0,
+      "firstDifferentLinearIndex": 0,
+      "firstDifferentRow": 0,
+      "firstDifferentColumn": 0,
+      "allFinite": true,
+      "firstDifferentStep": 0
+    },
+    "HI": {
+      "shape": [
+        401,
+        16090
+      ],
+      "sameShape": true,
+      "exact": true,
+      "maxAbs": 0,
+      "differentElements": 0,
+      "firstDifferentLinearIndex": 0,
+      "firstDifferentRow": 0,
+      "firstDifferentColumn": 0,
+      "allFinite": true,
+      "firstDifferentStep": 0
+    },
+    "L6": {
+      "shape": [
+        401,
+        16090
+      ],
+      "sameShape": true,
+      "exact": true,
+      "maxAbs": 0,
+      "differentElements": 0,
+      "firstDifferentLinearIndex": 0,
+      "firstDifferentRow": 0,
+      "firstDifferentColumn": 0,
+      "allFinite": true,
+      "firstDifferentStep": 0
+    },
+    "amb": {
+      "shape": [
+        401,
+        13689
+      ],
+      "sameShape": true,
+      "exact": true,
+      "maxAbs": 0,
+      "differentElements": 0,
+      "firstDifferentLinearIndex": 0,
+      "firstDifferentRow": 0,
+      "firstDifferentColumn": 0,
+      "allFinite": true,
+      "firstDifferentStep": 0
+    },
+    "lgn": {
+      "shape": [
+        401,
+        13689
+      ],
+      "sameShape": true,
+      "exact": true,
+      "maxAbs": 0,
+      "differentElements": 0,
+      "firstDifferentLinearIndex": 0,
+      "firstDifferentRow": 0,
+      "firstDifferentColumn": 0,
+      "allFinite": true,
+      "firstDifferentStep": 0
+    },
+    "spike": {
+      "shape": [
+        1000,
+        16090
+      ],
+      "sameShape": true,
+      "exact": true,
+      "maxAbs": 0,
+      "differentElements": 0,
+      "firstDifferentLinearIndex": 0,
+      "firstDifferentRow": 0,
+      "firstDifferentColumn": 0,
+      "allFinite": true,
+      "firstDifferentStep": 0
+    }
+  },
+  "spikeExact": true,
+  "spikeCountsExact": true,
+  "referenceSpikes": 136511,
+  "candidateSpikes": 136511,
+  "referenceESpikes": 79443,
+  "referenceISpikes": 57068,
+  "candidateESpikes": 79443,
+  "candidateISpikes": 57068,
+  "rngExact": true,
+  "passed": true,
+  "matlab_seconds": 19.0478998,
+  "cpp_seconds": 1.7618864,
+  "duration_s": 0.4,
+  "f1": [
+    2.25,
+    1.5
+  ]
+}

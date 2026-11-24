@@ -1,83 +1,95 @@
-# Model parameters and their sources
+# Model Parameters and Network Snapshots
 
-The starting points are two fixed historical parameter snapshots, not newly
-generated networks. `data/disordered_lgn.mat` and `data/low_lgn.mat` each retain
-the 11 named runtime variables documented in PROVENANCE.md. Use `load` with an output structure;
-loading the whole original workspace into the base workspace is unnecessary.
+The repository ships two fixed network realizations representing the two V1
+layer 4C$\alpha$ models:
 
-## Network and base weights
+| Preset | Alias | Data file | Complex LGN inputs | F1 scales (EE / EI) | BG/Grating initial LGN gain (E / I) | Onset initial LGN gain (E / I) |
+| --- | --- | --- | --- | --- | --- | --- |
+| `disordered_lgn` (default) | `high_cx` | `data/disordered_lgn.mat` | 2--5 (low), 7--8 (mid), 10--11 (high) | `2.25` / `1.5` | `1.15` / `1.20` | `1.11` / `1.15` |
+| `low_lgn` | -- | `data/low_lgn.mat` | 0, 1, or 2 | `1.3` / `1.2` | `1.11` / `1.15` | `1.11` / `1.15` |
 
-The fixed network has 13,689 E cells on a 117 x 117 grid, 2,401 I cells and
-110 LGN afferents. `Cat`, `Cat_i`, `LVwire` and `LVwire_i` retain the cell classes
-and LGN connections. `grid` determines LGN spatial phase. `inde` / `indi`
-select the historical analysis blocks. The runner uses their first block.
+Each `.mat` file contains 11 runtime variables: `param`, `param_v1`, `init_v1`,
+`kernel3`, `grid`, `Cat`, `Cat_i`, `LVwire`, `LVwire_i`, `inde`, and `indi`.
+Use `S = load('data/disordered_lgn.mat')` to inspect them without polluting the
+base workspace.
 
-Both snapshots' base weights in `param_v1` include `see=0.0245`, `sie=0.0176`, `sei=0.051`,
-`sii=0.09`, `selgn=0.0529`, and `silgn=0.09881`. They are not overwritten by
-F1 or LGN gain configuration. `L6tfm`, `l6cof`, `seetfm`, `sei_list`, the
-refractory vectors, `mask`, `seifac`, `segabab` and the remaining fields are
-loaded from the same snapshot. Consult the actual simulator for the subset
-of retained historical fields it consumes; unused fields are not promoted to
-active model parameters merely because they are present in the MAT structure.
+## Network Geometry and Connectivity
 
-The Low-LGN snapshot has its own `cmee`, `Cat`, `LVwire`, `l6cof`, `seetfm`,
-`sei_list` and `sincre_e`. Its 247 central complex cells have 0/1/2 LGN
-inputs (74/81/92 cells). The high-cx complex groups have 2--5, 7--9 or >9
-inputs. Do not transplant high-cx connectivity or lookup tables into a Low-LGN
-run merely because the scalar base weights agree.
+- **Cortical patch**: 4 hypercolumns covering $0.5^\circ \times 0.5^\circ$ of
+  visual space, with periodic (torus) boundary conditions.
+- **Populations**: 13,689 excitatory (E) neurons on a $117 \times 117$ grid,
+  2,401 inhibitory (I) neurons on a $49 \times 49$ grid, and 110 LGN afferents
+  (55 ON, 55 OFF) on a $10 \times 11$ grid (`grid`).
+- **Central analysis ROI**: `inde(1,:)` selects 841 E neurons (594 simple, 247
+  complex) and `indi(1,:)` selects 145 I neurons in the central hypercolumn,
+  which prefers **vertical** gratings.
+  - In `disordered_lgn`, the 247 central complex cells partition into 58 low
+    (2--5 LGN), 86 medium (7--9 LGN), and 103 high (>9 LGN).
+  - In `low_lgn`, the 247 central complex cells partition into 74 (0 LGN), 81
+    (1 LGN), and 92 (2 LGN).
+- **Connectivity convention**: Presynaptic row to postsynaptic column
+  (`cmee`: E->E, `cmie`: E->I, `cmei`: I->E, `cmii`: I->I).
+- **Network generation scripts**: Standalone scripts illustrating Section 2
+  template and connectivity construction are provided under `scripts/`. By
+  default, simulations load the fixed `.mat` snapshots above so runs are
+  directly comparable across users.
 
-`init_v1` contains saved E/I voltages. The original simulator still generates
-initial synaptic states, ambient activity and L6 events from its V1 random
-stream. This is not a saved full network-state continuation.
+## Base Synaptic Weights and Cortical Dynamics
 
-## Code-defined dynamics
+Both snapshots store base synaptic weights in `param_v1`:
 
-At the audited `dt=0.1 ms`, the original MATLAB simulator uses E/I membrane
-leak times 20/15 ms, base normalized spike threshold 1, reset voltage 0 and
-E adaptive-threshold increment 0.5 with 5.05 ms decay. Excitatory/inhibitory
-reversal values in the voltage equations are 14/3 and -2/3. Time constants
-for rise/decay are AMPA 0.5/2 ms, NMDA 2/80 ms, GABA-A 0.5/5 ms and
-GABA-B 3/100 ms. These are in `src/V1_4_fast.m`, not inferred from every
-similarly named snapshot field.
+- `see = 0.0245`, `sie = 0.0176`, `sei = 0.051`, `sii = 0.09`
+- `selgn = 0.0529`, `silgn = 0.09881`
+- `sel6 = 0.0072`, `sil6 = 0.0042`, `segabab = 1.5`
 
-The high-cx F1 curves are evaluated literally as
+Model-specific connectivity (`cmee`, `Cat`, `LVwire`) and lookup tables
+(`l6cof`, `seetfm`, `sei_list`, `sincre_e`) are loaded from the corresponding
+snapshot.
+
+In `src/V1_4_fast.m` (integration step `dt = 0.1 ms`):
+
+- **Membrane leak**: $\tau_{\text{leak}}^E = 20\text{ ms}$,
+  $\tau_{\text{leak}}^I = 15\text{ ms}$.
+- **Reversal potentials & threshold**: $V^E = 14/3$, $V^I = -2/3$, base spike
+  threshold $V_{\text{thresh}} = 1$, reset $V_{\text{rest}} = 0$. After an E
+  spike, the threshold increment is set to `0.5` and decays exponentially with
+  $\tau_{\text{thresh}} = 5.05\text{ ms}$.
+- **Synaptic time constants (rise / decay)**:
+  - AMPA: `0.5 / 2 ms` (LGN, L4, L6; 80% of L4/L6 EPSC)
+  - NMDA: `2 / 80 ms` (20% of L4/L6 EPSC)
+  - GABA-A: `0.5 / 5 ms`
+  - GABA-B: `3 / 100 ms` (triggered when an E cell receives >265 I spikes in 30 ms)
+- **Short-term depression ($F_1$ curves)**:
 
 ```matlab
-e_decay = ([1.2 1.2 1.2 1.20 1.19 1.16 1.12 1.07 1 0.96 0.94 0.92]-0.92)*2.25/3+0.92;
-i_decay = ([1.1 1.02 0.98 0.96 0.95 0.95 0.95 0.95 0.95 0.95 0.95 0.95]-0.95)*1.5/1.5+0.95;
+e_decay = ([1.2 1.2 1.2 1.20 1.19 1.16 1.12 1.07 1 0.96 0.94 0.92] - 0.92) * f1_ee_scale / 3 + 0.92;
+i_decay = ([1.1 1.02 0.98 0.96 0.95 0.95 0.95 0.95 0.95 0.95 0.95 0.95] - 0.95) * f1_ei_scale / 1.5 + 0.95;
 ```
 
-Their initial multipliers are 1.13 and 1.10. The recurrence, recovery rules,
-F2 lookup behavior and interaction with base weights are inherited from
-`V1_4_fast`. There are no new recurrent synaptic delays or later native-model
-threshold modifications in this package.
+  With `disordered_lgn` (`2.25 / 1.5`), the initial multipliers are `1.13` and
+  `1.10`. With `low_lgn` (`1.3 / 1.2`), they are `~1.0413` and `1.07`.
+- **Ambient conductance**: Ornstein-Uhlenbeck process updated each step.
+- **Layer 6 feedback**: Computed from a $21 \times 21$ Gaussian-weighted local
+  E firing rate (89% simple, 11% complex) mapped through `L6tfm`, with
+  activity-dependent facilitation.
 
-For `low_lgn`, the same two expressions use 1.3 instead of 2.25 and 1.2
-instead of 1.5. Initial F1 multipliers are approximately 1.041333 and 1.07,
-as documented in the original Low-LGN parameter notes. These are separate
-from the base weights and initial LGN gains.
+## Visual Stimuli and LGN Inputs
 
-## Visual/LGN inputs
-
-The saved kernel and spatial grid are reused without regeneration. `param.c`
-is 0.001, `IB` 0.1, `tau_leak` 0.1, `lambda` 1, `dt` 0.1 ms,
-`s_ex` 0.075, `v_th` 1.15, and speed 0.004 degrees/ms. The original helper
-upsamples each 1 ms visual-drive sample tenfold before calling `NLIF`.
-
-BG/grating `ex_gen2` uses high-cx initial gains E=1.15, I=1.20, or Low-LGN
-initial gains E=1.11, I=1.15. Its original
-history transitions are retained exactly: E switches at its 12-spike/240 ms
-and 20-spike/400 ms tests to 1.12 and 1; I switches at its 7-spike/140 ms
-and 12-spike/240 ms tests to 1.05 and 1. Read the code for exact indexing,
-strict inequalities and one-way flags; these are not continuous decay laws.
-
-Onset uses the separate `ex_gen_onset_test` rule. Before onset E/I gains are
-1.11/1.15; each afferent's first spike strictly after onset starts its original
-20-spike curve, and subsequent spikes after its 20th have gain 1. Background
-history does not advance the onset curve. These settings match the historical
-onset helper and numerical audit; they are deliberately exposed independently
-of the steady-input initial gains in `model_config`.
-
-The numerical and experimental literature sources for the model require an
-author-approved bibliography. The release identifies the concrete local
-parameter/source evidence without inventing missing paper references.
+- **Spatial & temporal kernels**: Loaded from `kernel3` (1 ms temporal sampling;
+  16 ms OFF leading zeros and 25 ms ON leading zeros). Optional extra uniform
+  delay can be added via `cfg.kernel_extra_delay_ms`.
+- **LGN LIF parameters**: `c = 0.001`, `IB = 0.1`, `tau_leak = 0.1` (rate in
+  $\text{ms}^{-1}$, i.e., 10 ms time constant), `lambda = 1`, `dt = 0.1 ms`,
+  `s_ex = 0.075`, `v_th = 1.15`.
+- **Drifting grating geometry**: Fixed at SF = 2.5 cycles/degree and speed = 4
+  degrees/second (`param.speed = 0.004` deg/ms, TF = 10 Hz).
+  - `cfg.direction = [1 0]` or `[-1 0]`: **vertical** grating drifting right or
+    left (**optimal** orientation for the central ROI).
+  - `cfg.direction = [0 1]` or `[0 -1]`: **horizontal** grating drifting up or
+    down (**orthogonal** orientation for the central ROI).
+- **LGN synaptic gain rules**:
+  - `bg` and `grating` use `src/ex_gen2.m` (history-dependent step transitions
+    from `lgn_gain_e_initial / lgn_gain_i_initial` to `1.12 / 1.05` and `1.0`).
+  - `onset` uses `src/ex_gen_onset_test.m` (initial gains `1.11 / 1.15` prior
+    to `onset_s`, followed by the 20-spike post-onset depression curve per
+    afferent and gain `1.0` thereafter).

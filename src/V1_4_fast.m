@@ -1,6 +1,7 @@
 function [res]=V1_4_fast(param,init,ex)
-% V1_4_fast: historical MATLAB simulator.
-% Release change: explicit F1 scales; defaults are the confirmed high-cx model.
+%V1_4_FAST Core MATLAB LIF network simulator for macaque V1 layer 4Ca.
+% Optional fields param.f1_ee_scale and param.f1_ei_scale control F1
+% depression scaling (defaults: 2.25 and 1.5 for Disordered-LGN).
 ee_scale=2.25; ei_scale=1.5;
 if isfield(param,'f1_ee_scale'), ee_scale=param.f1_ee_scale; end
 if isfield(param,'f1_ei_scale'), ei_scale=param.f1_ei_scale; end
@@ -48,9 +49,8 @@ sincre_i=param.sincre_i;
 sbasic_i=param.sei;
 supb_i=sbasic_i;
 slob_i=param.slob_i;
-dep_i_start=param.dep_i_start; %#ok<NASGU>
 
-% -------- Decay Tables (unchanged) --------
+% -------- Decay Tables --------
 
 
 tau_ampa_r = 0.5; tau_ampa_d = 2;
@@ -68,22 +68,16 @@ ni=size(cmei,1);
 exe=ex.exe;
 exi=ex.exi;
 
-% =========================================================
-% [Robust Setup] Matrix Pre-calculation
-% =========================================================
-% E->E and E->I: Linear operations, can use direct matrix mult
+% Pre-compute sparse synaptic weight matrices
+% E->E and E->I: linear updates via sparse matrix multiplication
 cme_EE = sparse(cmee * see);
 cme_EI = sparse(cmie .* sie);
 
-% I->I: Linear
+% I->I: linear update
 cmi_II = sparse(cmii * sii);
 
-% I->E: Non-linear (Max(W-fac,0)).
-% 为了加速访问，我们预先转置矩阵。
-% 原矩阵 cmei 是 (Ni x Ne)，即行代表源(I)，列代表目标(E)。
-% 转置后 cmi_IE_T 是 (Ne x Ni)。
-% 这样在循环中用 cmi_IE_T(:, ind) 取出一列，代表该 Inhibitory 神经元连向的所有 Excitatory 神经元。
-% 这种取列操作在 MATLAB 稀疏矩阵中极快。
+% I->E: nonlinear update max(W * boost - seifac, 0).
+% Transpose cmei (Ni x Ne) to cmi_IE_T (Ne x Ni) for fast column slicing.
 raw_cmi_IE = sparse(cmei .* sei);
 cmi_IE_T   = raw_cmi_IE';
 
@@ -122,13 +116,11 @@ HI = zeros(ceil(duration/dt/10)+1,ne+ni);
 amb = zeros(ceil(duration/dt/10)+1,ne);
 lgn = zeros(ceil(duration/dt/10)+1,ne);
 L6 = zeros(ceil(duration/dt/10)+1,ne+ni);
-gb = zeros(ceil(duration/dt/10)+1,ne);
 spikecount_short=zeros(70,ne);
 spikecount_gabab=zeros(300,ne);
 spikecount_dep_e=zeros(duration/100+1,13689);
 spikecount_dep_i=zeros(duration/100+1,2401);
 scind=1; gbind=1; dep_ind=0;
-inst_fr=zeros(ceil(duration/dt/10)+1,1);
 
 % Noise
 mean_e=0.0124*0.8; theta=0.4*0.2; sigma_e=0.1*sqrt(0.8*0.2)*mean_e;
@@ -136,10 +128,6 @@ mean_i=0.0124*0.75; sigma_i=0.1*sqrt(0.8*0.2)*mean_i;
 exe_amb=rand(1,ne)*2*mean_e; exi_amb=rand(1,ni)*2*mean_i;
 see_rec=ones(1,13689); sie_rec=ones(1,13689); sei_rec=ones(1,2401);
 see_check=see_rec; sie_check=sie_rec; sei_check=sei_rec;
-
-T10 = max(ceil(duration/10),1);
-see_check_record=zeros(T10,13689); see_rec_record=zeros(T10,13689);
-sie_check_record=zeros(T10,13689); sei_check_record=zeros(T10,2401);
 
 % Constants
 dec_ar=exp(-dt/tau_ampa_r); dec_ad=exp(-dt/tau_ampa_d);
@@ -273,34 +261,23 @@ for step=2:duration/dt
                 end
                 sei_check(ind)=sei_boost;
 
-                % --- [ROBUST] I to E Update ---
-                % 1. 利用转置矩阵 cmi_IE_T 快速获取该 I 神经元连接到的所有 E 神经元权重
+                % I-to-E nonlinear synaptic update: max(W * sei_boost - seifac, 0)
                 w_col = cmi_IE_T(:, ind);
 
                 if nnz(w_col) > 0
-                    % 2. 提取非零元素：target_idxs 是 E 神经元的索引
                     [target_idxs, ~, w_vals] = find(w_col);
 
-                    % 3. [核心修复] 安全获取对应的阈值 seifac
-                    % 无论 seifac 是标量(1x1) 还是 向量(1xNe)，都确保不出错
                     if isscalar(seifac)
                         eff_seifac = seifac;
                     else
-                        % 提取对应目标的阈值，并强制转为列向量以匹配 w_vals
                         eff_seifac = seifac(target_idxs);
                         if size(eff_seifac, 2) > 1, eff_seifac = eff_seifac'; end
                     end
 
-                    % 4. 执行原代码逻辑： Weight * Boost - Threshold
-                    % 此时 w_vals 和 eff_seifac 维度必然对齐，不会触发 Implicit Expansion Error
                     vals = w_vals * sei_boost - eff_seifac;
-
-                    % 5. 模拟 Max(..., 0)
                     keep_mask = vals > 0;
 
                     if any(keep_mask)
-                        % 6. 累加到 accumulator (Row vector)
-                        % target_idxs(keep_mask) 是受影响的 E 神经元位置
                         cI_accumulator_E = cI_accumulator_E + ...
                             sparse(1, target_idxs(keep_mask), vals(keep_mask), 1, ne);
                     end
@@ -334,11 +311,10 @@ for step=2:duration/dt
         hei(3,:)=hei(3,:)+cb; hei(4,:)=hei(4,:)+cb;
     end
 
-    % L6 & Homeostasis (unchanged from optimized version)
+    % L6 feedback & facilitation
     l6uptind=mod(step-2,10);
     if l6uptind==0
         l6step=round((step-2)/10);
-        inst_fr(l6step+1)=sum(sum(spikecount_short,1));
         [L6_spike_e,L6_spike_i]=fL6(spikecount_short,mask,kernel,map_ei,L6tfm,l6cof);
         L6(l6step+1,:)=sum([L6_spike_e,L6_spike_i],1);
         if l6step+1>=100
@@ -377,14 +353,9 @@ for step=2:duration/dt
 
     if mod(step,10)==0
         idx = step/10;
-        gb(idx,:)=gbsum; VE(idx,:)=ve(:); VI(idx,:)=vi(:);
+        VE(idx,:)=ve(:); VI(idx,:)=vi(:);
         amb(idx,:)=exe_amb; lgn(idx,:)=exe_row-exe_amb;
         HE(idx,:)=[hee_sum,hie_sum]; HI(idx,:)=[hei_sum,hii_sum];
-    end
-    if mod(t,10)==0
-        it = t/10;
-        see_check_record(it,:)=see_check; see_rec_record(it,:)=see_rec;
-        sie_check_record(it,:)=sie_check; sei_check_record(it,:)=sei_check;
     end
 end
 

@@ -1,0 +1,12 @@
+cmake_minimum_required(VERSION 3.16)
+project(v1_4_standalone LANGUAGES C CXX)
+add_executable(v1_4_standalone main.cpp v1_simulator.cpp v1_l6.cpp mat5.cpp
+    third_party/miniz/miniz_tinfl.c)
+target_compile_features(v1_4_standalone PRIVATE cxx_std_17)
+target_compile_definitions(v1_4_standalone PRIVATE MINIZ_NO_ARCHIVE_APIS MINIZ_NO_DEFLATE_APIS)
+if(MSVC)
+    target_compile_options(v1_4_standalone PRIVATE /O2 /fp:strict /arch:AVX2 /W4)
+    set_property(TARGET v1_4_standalone PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+else()
+    target_compile_options(v1_4_standalone PRIVATE -O2 -mavx2 -fno-fast-math -ffp-contract=off)
+endif()

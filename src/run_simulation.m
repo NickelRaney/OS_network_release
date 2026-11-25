@@ -5,6 +5,9 @@ validateattributes(cfg.duration_s,{'numeric'},{'scalar','finite','>=',0.4,'<=',1
 assert(abs(cfg.duration_s*10-round(cfg.duration_s*10))<1e-10, ...
     'OSNetwork:Duration','Legacy allocations require multiples of 0.1 s.');
 assert(ismember(cfg.condition,{'bg','grating','onset'}));
+if ~isfield(cfg,'backend') || isempty(cfg.backend), cfg.backend = 'matlab'; end
+assert(ismember(cfg.backend,{'matlab','cpp_native'}), ...
+    'OSNetwork:Backend','cfg.backend must be ''matlab'' or ''cpp_native''.');
 assert(cfg.onset_s>=0 && cfg.onset_s<cfg.duration_s);
 assert(cfg.analysis_start_s>=0 && cfg.analysis_start_s<cfg.duration_s);
 assert(isequal(size(cfg.direction),[1 2]) && all(isfinite(cfg.direction)) && norm(cfg.direction)>0);
@@ -51,13 +54,21 @@ else
 end
 random_state.lgn_after=rng;
 
-%% V1: pure MATLAB, including L6 and ambient stochastic input
-rng(cfg.v1_seed,'twister');
-random_state.v1_before=rng;
-timer=tic;
-res=V1_4_fast(param_v1,b.init_v1,ex);
-elapsed_s=toc(timer);
-random_state.v1_after=rng;
+%% V1 simulation ('matlab' or optional 'cpp_native' accelerator)
+if strcmp(cfg.backend,'cpp_native')
+    random_state.v1_before=struct('Type','cpp_native_xoshiro256ss','Seed',uint64(cfg.v1_seed));
+    timer=tic;
+    res=V1_4_fast_cpp_native(param_v1,b.init_v1,ex,uint64(cfg.v1_seed));
+    elapsed_s=toc(timer);
+    random_state.v1_after=struct('Type','cpp_native_xoshiro256ss','Seed',uint64(cfg.v1_seed));
+else
+    rng(cfg.v1_seed,'twister');
+    random_state.v1_before=rng;
+    timer=tic;
+    res=V1_4_fast(param_v1,b.init_v1,ex);
+    elapsed_s=toc(timer);
+    random_state.v1_after=rng;
+end
 validate_result(res,param_v1);
 
 %% Save to a fresh directory; retain the complete network spike trains
@@ -82,9 +93,16 @@ clear res;
 summary=spike_summary(spike,b.Cat,roi_e,roi_i,[cfg.analysis_start_s cfg.duration_s],cfg.preset);
 meta.matlab_version=version;
 meta.computer=computer;
+meta.backend=cfg.backend;
 meta.elapsed_v1_seconds=elapsed_s;
 meta.source_manifest=source_manifest(root);
-meta.note='Fresh MATLAB run; no historical trial rejection and no latency offset.';
+if strcmp(cfg.backend,'cpp_native')
+    meta.v1_rng='xoshiro256** + SplitMix64 + NumPy Ziggurat (C++)';
+    meta.note='C++ native RNG backend; trajectories differ from MATLAB twister for the same seed.';
+else
+    meta.v1_rng='MATLAB twister';
+    meta.note='Pure MATLAB run; no trial rejection and no latency offset.';
+end
 save(fullfile(folder,'result.mat'),'cfg','param','param_v1','kernel3','lgn','out', ...
     'random_state','spike','roi_e','roi_i','trace_time_s','l6_block_start_s','traces','summary','meta','-v7.3');
 copyfile(fullfile(root,'src'),fullfile(folder,'src'));

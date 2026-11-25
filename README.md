@@ -1,14 +1,16 @@
 # OS Network
 
-MATLAB implementation of a large-scale spiking network model of macaque primary
-visual cortex (V1 layer 4C$\alpha$) driven by magnocellular LGN inputs, with
-short-term synaptic depression, GABA-B inhibition, and Layer 6 feedback.
+MATLAB implementation (plus an optional standalone C++17/AVX2 accelerator) of a
+large-scale spiking network model of macaque primary visual cortex (V1 layer
+4C$\alpha$) driven by magnocellular LGN inputs, with short-term synaptic
+depression, GABA-B inhibition, and Layer 6 feedback.
 
 The repository includes two fixed 4-hypercolumn network models (13,689
 excitatory neurons, 2,401 inhibitory neurons, and 110 LGN afferents),
 simulation entry points for background activity, drifting gratings, and
-stimulus onset, steady-state and onset latency analysis tools, and standalone
-network-construction scripts.
+stimulus onset, steady-state and onset latency analysis tools, standalone
+network-construction scripts, and optional C++ source code for ~17x faster
+simulations.
 
 ## Included Models
 
@@ -27,9 +29,10 @@ templates and L4 torus connectivity are generated are available in
 - **MATLAB** (tested on **R2025b Update 2**, Windows x64; GNU Octave is not
   tested)
 - **Statistics and Machine Learning Toolbox** (required for `exprnd` in `NLIF`)
-- **Memory & runtime**: Allow at least **4--8 GB RAM**. On a desktop CPU, the
-  0.4 s demo takes ~15--20 s for V1 simulation, and a 2.5 s onset trial takes
-  ~1.5--2 min in serial MATLAB.
+- **Memory & runtime**: Allow at least **4--8 GB RAM**. On a desktop CPU, pure
+  MATLAB takes ~15--20 s for the 0.4 s demo and ~1.5--2 min for a 2.5 s onset
+  trial. With the optional C++ backend (`cpp/`), a 2.5 s simulation takes
+  **~6.5--7 s** (requires an x86-64 AVX2 CPU and C++17 compiler).
 
 ## Quick Start
 
@@ -80,6 +83,42 @@ The central analysis ROI (`inde(1,:)`) prefers **vertical** gratings.
 - **Optimal orientation (vertical)**: `[1 0]` (rightward) or `[-1 0]` (leftward)
 - **Orthogonal orientation (horizontal)**: `[0 1]` (upward) or `[0 -1]` (downward)
 
+## Optional C++ Accelerator (`cpp/`)
+
+For multi-trial campaigns (such as steady-state or onset protocols), `cpp/`
+provides the standalone C++17 / AVX2 implementation of `V1_4_fast` (~17x faster
+than pure MATLAB, ~6.5 s for a 2.5 s trial), usable either as a MATLAB MEX
+backend or as a standalone CLI executable (`v1_4_standalone`).
+
+**Important difference in RNG**: This C++ engine uses its own self-contained
+native RNG (`xoshiro256** 1.0` + `SplitMix64` + NumPy 2.3.3 double-precision
+Ziggurat normal transform) and does **not** use MATLAB's `twister` RNG (the
+legacy MATLAB-RNG MEX variant is not included). Therefore:
+- Model equations, double precision, and population-level statistics match
+  pure MATLAB (`V1_4_fast.m`).
+- **Individual spike trajectories for the same seed will differ** between
+  `cfg.backend = 'matlab'` and `cfg.backend = 'cpp_native'`.
+- Repeated runs of the C++ engine with the same seed and build are
+  deterministically reproducible.
+
+To build and enable the C++ backend in MATLAB (requires an AVX2 x86-64 CPU and
+C++17 compiler configured via `mex -setup C++`):
+
+```matlab
+setup
+build_v1_native_mex                     % Build once into cpp/
+
+cfg = model_config('disordered_lgn');
+cfg.backend = 'cpp_native';             % Use C++ engine instead of 'matlab'
+cfg.condition = 'onset';
+cfg.duration_s = 2.5;
+cfg.onset_s = 1.5;
+cfg.analysis_start_s = 1.5;
+folder = run_simulation(cfg);
+```
+
+To build the standalone MATLAB-free executable, see [cpp/README.md](cpp/README.md).
+
 ## Examples and Analysis Tools
 
 - `examples/run_conditions('disordered_lgn')`: Runs single 2.5 s trials for
@@ -101,7 +140,8 @@ The central analysis ROI (`inde(1,:)`) prefers **vertical** gratings.
 
 | Directory | Contents |
 | --- | --- |
-| `src/` | Core LGN/V1 simulators (`LGN3`, `LGN4`, `NLIF`, `ex_gen2`, `ex_gen_onset_test`, `V1_4_fast`), runner (`run_simulation`), and analysis functions |
+| `src/` | Core LGN/V1 simulators (`LGN3`, `LGN4`, `NLIF`, `ex_gen2`, `ex_gen_onset_test`, `V1_4_fast`, `V1_4_fast_cpp_native`), runner (`run_simulation`), and analysis functions |
+| `cpp/` | Optional standalone C++17 / AVX2 simulator, MATLAB MEX bridge (`build_v1_native_mex.m`), CMake/MSVC build scripts, and third-party RNG/miniz notices |
 | `config/` | Model presets and simulation defaults (`model_config.m`) |
 | `data/` | Fixed network snapshots (`disordered_lgn.mat`, `low_lgn.mat`) and complex-onset histogram fixture |
 | `examples/` | End-to-end scripts for conditions, steady-state metrics, onset protocols, and historical T50 check |
@@ -115,8 +155,12 @@ The central analysis ROI (`inde(1,:)`) prefers **vertical** gratings.
 - [Model parameters and dynamics](docs/PARAMETERS.md)
 - [Output files and data conventions](docs/OUTPUTS.md)
 - [Analysis functions and stimulus conventions](docs/ANALYSIS.md)
+- [Standalone C++ accelerator and RNG details](cpp/README.md)
 - [Network construction scripts](scripts/README.md)
 
 ## License
 
-Released under the [MIT License](LICENSE).
+Project code and data are released under the [MIT License](LICENSE). Third-party
+components under `cpp/third_party/` and `cpp/vendor/` retain their respective
+upstream licenses (`miniz`: MIT; `xoshiro256**` / `SplitMix64`: public domain;
+NumPy Ziggurat tables: BSD-3-Clause).

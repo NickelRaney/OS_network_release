@@ -51,6 +51,7 @@ cfg.direction = [1 0];     % [1 0] / [-1 0]: optimal (vertical); [0 1]: orthogon
 cfg.phase_pi = 0.1;
 
 % Fixed spatial frequency (2.5 cycles/deg) and speed (4 deg/s -> TF = 10 Hz)
+cfg.backend = 'matlab';    % 'matlab' (default) or 'cpp_native' (requires cpp/build_v1_native_mex)
 cfg.lgn_seed = 2026112301;
 cfg.v1_seed = 2026112302;
 cfg.analysis_start_s = 0;

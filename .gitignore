@@ -4,6 +4,11 @@ outputs/*
 *.asv
 *.m~
 *.mex*
+*.exe
+*.obj
+*.o
+cpp/build/
+cpp/v1_4_standalone
 *.log
 *.mlappinstall
 *.prj
